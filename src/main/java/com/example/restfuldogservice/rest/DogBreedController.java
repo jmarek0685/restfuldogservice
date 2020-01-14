@@ -3,6 +3,7 @@ package com.example.restfuldogservice.rest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,17 +47,18 @@ public class DogBreedController {
 			JSONObject json2 = (JSONObject) parser.parse(jsonData2);
 
 			JSONObject businessObject = (JSONObject) json2.get("message");
-			int counter = 0;
+			AtomicInteger counter = new AtomicInteger(0);
 			Set<?> set = businessObject.keySet();
 			Breeds b = new Breeds();
 			ArrayList<Dog> dogpound = new ArrayList<Dog>();
-			for (Object object : set) {
-				Dog d = new Dog();
-				d.setName(object.toString());
-				d.setId(counter);
-				dogpound.add(d);
-				counter++;
-			}
+			
+			  set.stream().forEach(doggie -> {
+					Dog d = new Dog();
+					d.setName(doggie.toString());
+					d.setId(counter.getAndIncrement());
+					dogpound.add(d);
+			    });
+
 			b.setDogs(dogpound);
 
 			return b;
